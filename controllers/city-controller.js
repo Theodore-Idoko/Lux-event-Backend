@@ -19,6 +19,59 @@ const getCity = async (req, res, next) => {
   res.json({ cities: cities.map((city) => city.toObject({ getters: true}))}); // to turn state to a simple javascript object
 }
 
+const getCityById = async (req, res, next) => {
+  const cityId = req.params.cid;
+
+  let city;
+  try {
+    city = await city.findById(cityId);
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not find a city.',
+      500
+    );
+    return next(error);
+  }
+  if (!city) {
+    const error = new HttpError(
+      'Could not find a city for the provided id.',
+      404
+    );
+    return next(error);
+  }
+
+  res.json({ city: city.toObject({ getters: true }) }); // to turn place to a simple javascript object
+};
+
+const getCityByStateId = async (req, res, next) => {
+  const stateId = req.params.sid;
+
+  let stateHasCities;
+  try {
+    stateHasCities = await State.findById(stateId).populate('cities');
+  } catch (err) {
+    const error = new HttpError(
+      'Fetching cities failed, please try again later.',
+      500
+    );
+    return next(error);
+  }
+
+  if (!stateHasCities || stateHasCities.length === 0) {
+    const error = new HttpError(
+      'Could not find a stateHasCities for the provided id.',
+      404
+    );
+    return next(error);
+  }
+
+  res.json({
+    cities: stateHasCities.cities.map((city) => 
+      city.toObject({ getters: true})
+    ),
+  })
+}
+
 const createCity = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -132,7 +185,9 @@ const deleteCity = async (req, res, next ) => {
   res.status(200).json({ message: 'city deleted.' });
 }
 
+exports.getCityById = getCityById;
 exports.createCity = createCity;
 exports.getCity = getCity;
 exports.updateCity = updateCity;
 exports.deleteCity = deleteCity;
+exports.getCityByStateId = getCityByStateId;

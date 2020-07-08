@@ -18,6 +18,30 @@ const getState = async (req, res, next) => {
   res.json({ states: states.map((state) => state.toObject({ getters: true}))}); // to turn state to a simple javascript object
 }
 
+const getStateById = async (req, res, next) => {
+  const stateId = req.params.vid;
+
+  let state;
+  try {
+    state = await state.findById(stateId);
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not find a state.',
+      500
+    );
+    return next(error);
+  }
+  if (!state) {
+    const error = new HttpError(
+      'Could not find a state for the provided id.',
+      404
+    );
+    return next(error);
+  }
+
+  res.json({ state: state.toObject({ getters: true }) }); // to turn place to a simple javascript object
+};
+
 const createState = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -111,6 +135,7 @@ const deleteState = async (req, res, next ) => {
   res.status(200).json({ message: 'State deleted.' });
 }
 
+exports.getStateById = getStateById;
 exports.createState = createState;
 exports.getState = getState;
 exports.updateState = updateState;

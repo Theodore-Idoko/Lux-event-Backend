@@ -7,6 +7,8 @@ const HttpError = require('../models/http-error');
 const router = express.Router();
 
 router.get('/', cityControllers.getCity);
+router.get('/:cid', cityControllers.getCityById)
+router.get('/city/:sid', cityControllers.getCityByStateId)
 
 router.post(
   '/', 

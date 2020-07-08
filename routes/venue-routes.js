@@ -6,6 +6,10 @@ const HttpError = require('../models/http-error');
 
 const router = express.Router();
 
+router.get('/:vid', venuesController.getVenueById)
+
+router.get('/venue/:cid', venuesController.getVenuesByCityId)
+
 router.post(
   '/',
   [
@@ -37,33 +41,33 @@ router.post(
   venuesController.createVenue
 )
 
-// router.patch(
-//   '/:vid',
-//   [
-//     check('venue')
-//     .not()
-//     .isEmpty(),
-//     check('decription')
-//     .isLength({min: 10}),
-//     check('address')
-//     .isLength({ min: 10}),
-//     check('date')
-//     .not()
-//     .isEmpty(),
-//     check('style')
-//     .not()
-//     .isEmpty(),
-//     check('amenities')
-//     .isLength({ min: 10}),
-//     check('guestCapacity')
-//     .not()
-//     .isEmpty(),
-//     check('service')
-//     .not()
-//     .isEmpty(),
-//   ],
-//   venuesController.updateVenue);
+router.patch(
+  '/:vid',
+  [
+    check('venue')
+    .not()
+    .isEmpty(),
+    check('description')
+    .isLength({min: 10}),
+    check('address')
+    .isLength({ min: 10}),
+    check('date')
+    .not()
+    .isEmpty(),
+    check('style')
+    .not()
+    .isEmpty(),
+    check('amenities')
+    .isLength({ min: 10}),
+    check('guestCapacity')
+    .not()
+    .isEmpty(),
+    check('service')
+    .not()
+    .isEmpty(),
+  ],
+  venuesController.updateVenue);
 
-// router.delete('/:vid', venuesController.deleteVenue);
+ router.delete('/:vid', venuesController.deleteVenue);
 
 module.exports = router;

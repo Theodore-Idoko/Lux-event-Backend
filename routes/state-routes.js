@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.get('/', stateControllers.getState);
 
+router.get('/:sid', stateControllers.getStateById)
+
 router.post(
   '/', 
   [check('state')

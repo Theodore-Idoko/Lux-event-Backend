@@ -6,6 +6,60 @@ const City = require('../models/cities');
 const Venue = require('../models/venue');
 const mongoose = require('mongoose');
 
+const getVenueById = async (req, res, next) => {
+  const venueId = req.params.vid;
+
+  let venue;
+  try {
+    venue = await Venue.findById(venueId);
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not find a venue.',
+      500
+    );
+    return next(error);
+  }
+  if (!venue) {
+    const error = new HttpError(
+      'Could not find a venue for the provided id.',
+      404
+    );
+    return next(error);
+  }
+
+  res.json({ venue: venue.toObject({ getters: true }) }); // to turn place to a simple javascript object
+};
+
+
+const getVenuesByCityId = async (req, res, next) => {
+  const cityId = req.params.cid;
+
+  let citiesHasVenue;
+  try {
+    citiesHasVenue = await City.findById(cityId).populate('venues');
+  } catch (err) {
+    const error = new HttpError(
+      'Fetching venues failed, please try again later.',
+      500
+    );
+    return next(error);
+  }
+
+  if (!citiesHasVenue || citiesHasVenue.length === 0) {
+    const error = new HttpError(
+      'Could not find a citiesHasVenue for the provided id.',
+      404
+    );
+    return next(error);
+  }
+
+  res.json({
+    venues: citiesHasVenue.venues.map((venue) => 
+      venue.toObject({ getters: true})
+    ),
+  })
+}
+
 const createVenue = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -68,6 +122,87 @@ const createVenue = async (req, res, next) => {
     return next(error)
   }
   res.status(201).json({ venue: createdVenue });
+};
+
+const updateVenue = async(req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    );
+  }
+
+  const { venue, price, date, guestCapacity, service, description, style, amenities,address, } = req.body;
+  const venueId = req.params.vid;
+
+  let venueOfCity;
+  try {
+    venueOfCity = await Venue.findById(venueId)
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not update venue.',
+      500
+    );
+    return next(error);
+  }
+
+  venueOfCity.venue = venue;
+  venueOfCity.description = description;
+  venueOfCity.price = price;
+  venueOfCity.address = address;
+  venueOfCity.style = style;
+  venueOfCity.amenities = amenities;
+  venueOfCity.guestCapacity = guestCapacity;
+  venueOfCity.date = date;
+  venueOfCity.service = service;
+
+  try {
+    await venueOfCity.save();
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not update venue.',
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({venue: venueOfCity.toObject({ getters: true })}) ;
+};
+
+const deleteVenue = async (req, res, next ) => {
+  const venueId = req.params.vid;
+
+  let venue;
+  try {
+    venue = await Venue.findById(venueId);
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not delete venue.',
+      500
+    );
+    return next(error);
+  }
+
+  if (!venue) {
+    const error = new HttpError('Could not find venue for this id.', 404);
+    return next(error);
+  }
+
+  try {
+    await venue.remove()
+  } catch (Err) {
+    const error = new HttpError(
+      'Something went wrong, could not delete venue.',
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ message: 'venue deleted.' });
 }
 
+exports.getVenueById = getVenueById;
+exports.getVenuesByCityId = getVenuesByCityId;
 exports.createVenue = createVenue;
+exports.updateVenue = updateVenue;
+exports.deleteVenue = deleteVenue;
