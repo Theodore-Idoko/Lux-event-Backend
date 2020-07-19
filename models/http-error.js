@@ -5,4 +5,6 @@ class HttpError extends Error {
   }
 }
 
+// the httpError is just a constructor function for handling errors
+
 module.exports = HttpError;

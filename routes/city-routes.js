@@ -1,8 +1,9 @@
 const express = require('express');
 const { check } = require('express-validator');
+// express-validator required above is used to do the validation from the backend
 
 const cityControllers = require('../controllers/city-controller')
-const HttpError = require('../models/http-error');
+// citycontroller is where the the main logic about the cities are, it is separated for clarity and required here.
 
 const router = express.Router();
 

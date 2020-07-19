@@ -1,9 +1,13 @@
 const fs = require('fs');
 const { validationResult } = require('express-validator');
+// express-validator required above is used to do the validation from the backend 
 const HttpError = require('../models/http-error');
+// the httpError is just a constructor function for handling errors
 const getCoordsForAddress = require('../utils/location');
+// the getcoordinates where the arguement from the google api for the longitude and latitude is required
 const City = require('../models/cities');
 const Venue = require('../models/venue');
+// the City and Venueschema is required
 const mongoose = require('mongoose');
 
 const getVenueById = async (req, res, next) => {
@@ -37,6 +41,7 @@ const getVenuesByCityId = async (req, res, next) => {
   let citiesHasVenue;
   try {
     citiesHasVenue = await City.findById(cityId).populate('venues');
+    // the city with the particular id is found and the venues are populated
   } catch (err) {
     const error = new HttpError(
       'Fetching venues failed, please try again later.',
@@ -55,7 +60,7 @@ const getVenuesByCityId = async (req, res, next) => {
 
   res.json({
     venues: citiesHasVenue.venues.map((venue) => 
-      venue.toObject({ getters: true})
+      venue.toObject({ getters: true}) // the venues as simple javascript object is returned
     ),
   })
 }
@@ -66,6 +71,7 @@ const createVenue = async (req, res, next) => {
     return next(
       new HttpError('Invalid inputs passed, please check your data.', 422)
     );
+    // validation of the input is checked above
   }
 
   const { venue, price, date, guestCapacity, service, description, style, amenities,address, cityId} = req.body;
@@ -74,6 +80,7 @@ const createVenue = async (req, res, next) => {
 
   try {
     coordinates = await getCoordsForAddress(address);
+    // address is passed into getCoordsForAddress in order to get the coordinates of the particular address
   } catch (error) {
     return next(error);
   }
@@ -97,6 +104,7 @@ const createVenue = async (req, res, next) => {
 
   try {
     city = await City.findById(cityId)
+    // the city is found from with the help of the cityid
   } catch (err) {
     const error = new HttpError('Creating venue failed, please try again', 500);
     return next(error)
@@ -108,6 +116,7 @@ const createVenue = async (req, res, next) => {
   }
 
   try {
+    // a session is started where the createdvenue will be saved and as well as pushed to venues array of the particular city whose cityId was indicated
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdVenue.save({ session: sess });
@@ -155,9 +164,11 @@ const updateVenue = async(req, res, next) => {
   venueOfCity.guestCapacity = guestCapacity;
   venueOfCity.date = date;
   venueOfCity.service = service;
+  // venueofcity is updated
 
   try {
     await venueOfCity.save();
+    // updated venueofCity is save
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not update venue.',
@@ -166,7 +177,7 @@ const updateVenue = async(req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({venue: venueOfCity.toObject({ getters: true })}) ;
+  res.status(200).json({venue: venueOfCity.toObject({ getters: true })}) ; // returned as simple javascript object
 };
 
 const deleteVenue = async (req, res, next ) => {

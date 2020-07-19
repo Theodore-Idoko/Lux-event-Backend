@@ -1,8 +1,9 @@
 const express = require('express');
 const { check } = require('express-validator');
+// express-validator required above is used to do the validation from the backend
 
 const stateControllers = require('../controllers/states-controllers')
-const HttpError = require('../models/http-error');
+// statecontroller is where the the main logic about the states are, it is separated for clarity and required here.
 
 const router = express.Router();
 

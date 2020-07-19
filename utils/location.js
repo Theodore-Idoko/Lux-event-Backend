@@ -4,6 +4,9 @@ const HttpError = require('../models/http-error');
 
 const API_KEY = 'AIzaSyCYLQFgFS-r3RI8GxG0530b31GCx9zET4g';
 
+// This is built for for the address to be connected to google api in order to get the longitude and latitude but since
+// i have My api key is not functioning at the moment, i hard coded the longitude and latitude
+
 async function getCoordsForAddress(address) {
    return {
     lat: 40.7484474,

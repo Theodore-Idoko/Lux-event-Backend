@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken')
 
 const HttpError = require("../models/http-error");
 
+// check-auth is mainly for authorisation, it checks if a certain user can gain access to certain routes. this can only happen if the user is logged in
+
 module.exports = (req, res, next) => {
   if (req.method === 'OPTIONS') {
     return next();

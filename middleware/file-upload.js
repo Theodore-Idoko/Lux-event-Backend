@@ -7,6 +7,7 @@ const MIME_TYPE_MAP = {
   'image/jpg': 'jpg'
 };
 
+// this is mainly for the image upload not in use yet. it  will mainly be used in the admin dashboard
 const fileUpload = multer({
   limits: 500000,
   storage: multer.diskStorage({

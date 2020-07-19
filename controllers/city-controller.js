@@ -1,7 +1,10 @@
 const { validationResult } = require('express-validator');
+// express-validator required above is used to do the validation from the backend 
 const HttpError = require('../models/http-error');
+// the httpError is just a constructor function for handling errors
 const City = require('../models/cities');
 const State = require('../models/states')
+// Both the City and State schema is required above
 const mongoose = require('mongoose');
 
 const getCity = async (req, res, next) => {
@@ -24,7 +27,8 @@ const getCityById = async (req, res, next) => {
 
   let city;
   try {
-    city = await city.findById(cityId);
+    city = await City.findById(cityId);
+    // city with a particular id is checked
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not find a city.',
@@ -46,9 +50,11 @@ const getCityById = async (req, res, next) => {
 const getCityByStateId = async (req, res, next) => {
   const stateId = req.params.sid;
 
+
   let stateHasCities;
   try {
     stateHasCities = await State.findById(stateId).populate('cities');
+    // the state with the particular id is found and the cities are populated
   } catch (err) {
     const error = new HttpError(
       'Fetching cities failed, please try again later.',
@@ -67,7 +73,7 @@ const getCityByStateId = async (req, res, next) => {
 
   res.json({
     cities: stateHasCities.cities.map((city) => 
-      city.toObject({ getters: true})
+      city.toObject({ getters: true})// the cities are returned as a simple javascript obj
     ),
   })
 }
@@ -91,6 +97,7 @@ const createCity = async (req, res, next) => {
   let state;
   try {
     state = await State.findById(stateId)
+    // the state is found from with the help of the stateid
   } catch (err) {
     const error = new HttpError('Creating city failed, please try again', 500);
     return next(error);
@@ -102,6 +109,7 @@ const createCity = async (req, res, next) => {
   }
 
   try {
+    // a session is started where the createdCity will be saved and as well as pushed to cities array of the particular state whose stateId was indicated
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdCity.save({ session: sess})
