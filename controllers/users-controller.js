@@ -58,7 +58,8 @@ const signup = async (req, res, next) => {
   const createdUser = new User({
     name,
     email,
-    password: hashedPassword
+    password: hashedPassword,
+    bookings: []
   });
 
   try {

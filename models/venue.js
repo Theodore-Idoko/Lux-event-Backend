@@ -14,11 +14,11 @@ const venueSchema = new Schema({
   },
   style: { type: String, required: true },
   amenities: { type: String, required: true},
-  date: { type: String, required: true},
   address: { type: String, required: true},
   //image: { type: String, required: true },
-  cityId: { type: mongoose.Types.ObjectId, required: true, ref: 'City'}
+  cityId: { type: mongoose.Types.ObjectId, required: true, ref: 'City'},
   // in the venueschema, the id for the city is required in other associate particular venues to a particular city
+  bookings: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Booking'}]
 })
 
 module.exports = mongoose.model('Venue', venueSchema);

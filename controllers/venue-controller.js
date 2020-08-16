@@ -10,6 +10,7 @@ const Venue = require('../models/venue');
 // the City and Venueschema is required
 const mongoose = require('mongoose');
 
+
 const getVenueById = async (req, res, next) => {
   const venueId = req.params.vid;
 
@@ -74,7 +75,12 @@ const createVenue = async (req, res, next) => {
     // validation of the input is checked above
   }
 
-  const { venue, price, date, guestCapacity, service, description, style, amenities,address, cityId} = req.body;
+ 
+ 
+
+  const { venue, price, image,  guestCapacity, service, description, style, amenities,address, cityId} = req.body;
+
+  
 
   let coordinates;
 
@@ -88,16 +94,16 @@ const createVenue = async (req, res, next) => {
   const createdVenue = new Venue({
     venue,
     price,
-    date,
     address,
     location: coordinates,
-    // image: req.file.path,
+    //image: data.urls,
     guestCapacity,
     service,
     description,
     style,
     amenities,
-    cityId
+    cityId,
+    bookings: []
   })
 
   let city;
